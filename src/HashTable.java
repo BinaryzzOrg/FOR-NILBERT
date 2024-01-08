@@ -1,10 +1,10 @@
-
 public class HashTable {
 	private Node head;
 
 	// field variables
 	Node[] table;
 	int tableSize;
+	int increment = 1;
 
 	public void IsHeadAvailable(Node node) {
 		if (head == null) {
@@ -22,16 +22,49 @@ public class HashTable {
 	}// end constructor
 
 	public void Add() {
+		if (tableSize == table.length) {
+			System.out.println("Table is full");
+			ViewHashTable();
+			return;
+		}
 		System.out.print("Enter a number: ");
 
 		int value = Main.CheckUserInput("Enter a number: ");
-		Node node = new Node(value, HashSum(value, table.length));
+		Node node = new Node(value, HashCode(value, table.length));
 
-		HashSum(value, table.length);
 		HashFunction(node);
 
 		// code here
 		ViewHashTable();
+	}// end method
+
+	public int HashCode(int value, int tableLength) {
+		int key = value % tableLength;
+		return key;
+	}// end method
+
+	public void HashFunction(Node node) {
+		System.out.println("Increment: " + increment);
+		if (table[node.getKey()] != null) {
+			HashFunction(LinearProbe(node));
+			return;
+
+		} else {
+			tableSize++;
+			table[node.getKey()] = node;
+		} // end if else
+	}// end method
+
+	public Node LinearProbe(Node node) {
+		int key = ((node.getData() + increment++) % table.length);
+
+		if (node.getKey() >= table.length && tableSize != table.length) {
+			node.setKey(0);
+			return node;
+		} // end if
+
+		node.setKey(key);
+		return node;
 	}// end method
 
 	public void ViewHashTable() {
@@ -46,29 +79,4 @@ public class HashTable {
 		} // end method
 	}// end method
 
-	public int HashSum(int value, int tableLength) {
-		int key = value % tableLength;
-		return key;
-	}// end method
-
-	public void HashFunction(Node node) {
-		table[LinearProbe(node)] = node;
-		tableSize++;
-	}// end method
-
-	public int LinearProbe(Node node) {
-		if (node.getKey() + 1 > table.length) {
-			node.setKey(0);
-		} else if (tableSize == table.length) {
-			System.out.println("HashTable Already full");
-			return node.getKey();
-		} // end method
-
-		if (table[node.getKey()] != null) {
-			node.setKey(node.getKey() + 1);
-			LinearProbe(node);
-			return node.getKey();
-		} // end if
-		return node.getKey();
-	}// end method
 }// end method
